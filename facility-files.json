@@ -1,0 +1,14 @@
+---
+layout: null
+---
+{%- assign facility_items = "" -%}
+{%- for file in site.static_files -%}
+  {%- if file.path contains "/assets/facility/" -%}
+    {%- assign path_parts = file.path | split: "/" -%}
+    {%- assign year = path_parts[3] -%}
+    {%- capture item -%}{"name":{{ file.name | jsonify }},"year":{{ year | jsonify }},"url":{{ file.path | relative_url | jsonify }}}{%- endcapture -%}
+    {%- if facility_items != "" -%}{%- assign facility_items = facility_items | append: "," -%}{%- endif -%}
+    {%- assign facility_items = facility_items | append: item -%}
+  {%- endif -%}
+{%- endfor -%}
+[{{ facility_items }}]
