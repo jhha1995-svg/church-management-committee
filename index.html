@@ -147,7 +147,7 @@ loadNotices();
       list.replaceChildren();
       yearFiles.forEach(file=>{
         const link=document.createElement('a');link.className='facility-file';link.href=file.url;link.setAttribute('aria-label',file.name+' 문서 보기');
-        link.target='_blank';link.rel='noopener noreferrer';
+        link.target='_self';
         const icon=document.createElement('span');icon.className='facility-file-icon';icon.textContent='↗';
         const meta=document.createElement('span');meta.className='facility-file-meta';
         const name=document.createElement('strong');name.textContent=file.name;
