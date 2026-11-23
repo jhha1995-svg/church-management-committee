@@ -4,7 +4,9 @@ layout: null
 {%- assign photo_items = "" -%}
 {%- for photo in site.static_files -%}
   {%- if photo.path contains "/assets/photos/" -%}
-    {%- capture item -%}{"name":{{ photo.name | jsonify }},"url":{{ photo.path | relative_url | jsonify }}}{%- endcapture -%}
+    {%- assign path_parts = photo.path | split: "/" -%}
+    {%- assign year = path_parts[3] -%}
+    {%- capture item -%}{"name":{{ photo.name | jsonify }},"year":{{ year | jsonify }},"url":{{ photo.path | relative_url | jsonify }}}{%- endcapture -%}
     {%- if photo_items != "" -%}{%- assign photo_items = photo_items | append: "," -%}{%- endif -%}
     {%- assign photo_items = photo_items | append: item -%}
   {%- endif -%}
