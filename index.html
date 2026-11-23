@@ -79,7 +79,7 @@ loadNotices();
       const children=new Set();
       yearFiles.forEach(photo=>{if(!photo.folderPath.startsWith(prefix)||photo.folderPath===path)return;const remainder=photo.folderPath.slice(prefix.length);if(remainder)children.add(remainder.split('/')[0]);});
       const directImages=yearFiles.filter(photo=>photo.folderPath===path&&imageFile(photo)).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-      const descendantImageCount=child=>yearFiles.filter(photo=>imageFile(photo)&&photo.folderPath.startsWith(prefix+child+'/')).length;
+      const descendantImageCount=child=>yearFiles.filter(photo=>imageFile(photo)&&(photo.folderPath===prefix+child||photo.folderPath.startsWith(prefix+child+'/'))).length;
       count.textContent=path?directImages.length+'장 · '+children.size+'개 하위 폴더':children.size+'개 폴더';
       grid.replaceChildren();
       [...children].sort((a,b)=>a.localeCompare(b,'ko')).forEach(child=>{
