@@ -17,6 +17,9 @@
 .photo-viewer[hidden]{display:none}.photo-viewer{position:fixed;z-index:1000;inset:0;display:grid;grid-template-columns:56px minmax(0,1fr) 56px;grid-template-rows:56px minmax(0,1fr) 48px;align-items:center;justify-items:center;padding:12px;background:#101512f2;color:#fff;touch-action:pan-y}.photo-viewer-stage{grid-column:2;grid-row:2;min-width:0;min-height:0;width:100%;height:100%;display:grid;place-items:center}.photo-viewer-image{display:block;max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}.photo-viewer-caption{grid-column:2;grid-row:3;margin:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:12px}.photo-viewer-button{width:44px;height:44px;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:50%;background:#ffffff18;color:white;font-size:24px;cursor:pointer}.photo-viewer-button:hover{background:#ffffff35}.photo-viewer-prev{grid-column:1;grid-row:2}.photo-viewer-next{grid-column:3;grid-row:2}.photo-viewer-close{grid-column:3;grid-row:1}@media(max-width:600px){.photo-viewer{grid-template-columns:44px minmax(0,1fr) 44px;grid-template-rows:48px minmax(0,1fr) 42px;padding:8px}.photo-viewer-button{width:38px;height:38px;font-size:21px}.photo-viewer-caption{font-size:11px}}
 .photo-card{width:100%;padding:0;text-align:left;cursor:pointer}
 </style>
+<style>
+.facility-preview[hidden]{display:none}.facility-preview{position:fixed;z-index:1100;inset:0;display:flex;flex-direction:column;background:#fff}.facility-preview-bar{display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 14px;padding-top:max(8px,env(safe-area-inset-top));background:#315d4c;color:#fff}.facility-preview-title{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600}.facility-preview-open{color:#fff;font-size:11px;white-space:nowrap}.facility-preview-close{width:38px;height:38px;border:1px solid #ffffff66;border-radius:50%;background:transparent;color:#fff;font-size:24px;cursor:pointer}.facility-preview-frame{display:block;width:100%;height:calc(100vh - 58px);height:calc(100dvh - 58px);flex:1;border:0;background:#f2f3f1}
+</style>
 </head>
 <body>
 <header class="wrap topbar"><a class="brand" href="#top"><span class="brand-icon"><img src="assets/church-logo.png?v=logo1" alt=""></span><span>수봉산장로교회<small>CHURCH CARE COMMITTEE</small></span></a><nav class="nav"><a href="#notice">공지사항</a><a href="#schedule">회의 일정</a><a href="#resources">자료실</a><a href="#contact">건의·요청</a></nav><a class="top-action" href="#resources">위원회 자료 보기 ↗</a></header>
@@ -130,6 +133,17 @@ loadNotices();
   const list=document.getElementById('facility-files');
   const count=document.getElementById('facility-count');
   if(!select||!list)return;
+  const preview=document.createElement('div');preview.className='facility-preview';preview.hidden=true;preview.setAttribute('role','dialog');preview.setAttribute('aria-modal','true');preview.setAttribute('aria-label','시설 관리 문서 미리보기');
+  const previewBar=document.createElement('div');previewBar.className='facility-preview-bar';
+  const previewTitle=document.createElement('strong');previewTitle.className='facility-preview-title';
+  const previewOpen=document.createElement('a');previewOpen.className='facility-preview-open';previewOpen.target='_blank';previewOpen.rel='noopener noreferrer';previewOpen.textContent='새 탭에서 열기 ↗';
+  const previewClose=document.createElement('button');previewClose.type='button';previewClose.className='facility-preview-close';previewClose.setAttribute('aria-label','문서 보기 닫기');previewClose.textContent='×';
+  const previewFrame=document.createElement('iframe');previewFrame.className='facility-preview-frame';previewFrame.title='시설 관리 문서';previewFrame.setAttribute('allowfullscreen','');
+  previewBar.append(previewTitle,previewOpen,previewClose);preview.append(previewBar,previewFrame);document.body.append(preview);
+  function closePreview(){preview.hidden=true;previewFrame.src='about:blank';document.body.style.overflow='';}
+  previewClose.addEventListener('click',closePreview);
+  preview.addEventListener('click',event=>{if(event.target===preview)closePreview();});
+  document.addEventListener('keydown',event=>{if(!preview.hidden&&event.key==='Escape')closePreview();});
   try{
     const response=await fetch('facility-files.json',{cache:'no-store'});
     if(!response.ok)throw new Error('facility list unavailable');
@@ -144,7 +158,8 @@ loadNotices();
       if(!yearFiles.length){list.innerHTML='<p class="photo-message">'+year+'년 폴더에 자료가 없습니다. assets/facility/'+year+' 폴더에 파일을 올리면 여기에 표시됩니다.</p>';return;}
       list.replaceChildren();
       yearFiles.forEach(file=>{
-        const link=document.createElement('a');link.className='facility-file';link.href=file.url;link.target='_blank';link.rel='noopener noreferrer';
+        const link=document.createElement('a');link.className='facility-file';link.href=file.url;link.setAttribute('aria-label',file.name+' 문서 보기');
+        link.addEventListener('click',event=>{event.preventDefault();previewTitle.textContent=file.name;previewOpen.href=file.url;previewFrame.src=file.url;preview.hidden=false;document.body.style.overflow='hidden';previewClose.focus();});
         const icon=document.createElement('span');icon.className='facility-file-icon';icon.textContent='↗';
         const meta=document.createElement('span');meta.className='facility-file-meta';
         const name=document.createElement('strong');name.textContent=file.name;
