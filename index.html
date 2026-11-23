@@ -34,7 +34,7 @@
     const response=await fetch('photos.json',{cache:'no-store'});
     if(!response.ok)throw new Error('photo list unavailable');
     const photos=await response.json();
-    const years=['2027','2026'];
+    const years=['2026','2027'];
     select.replaceChildren(...years.map(year=>{const option=document.createElement('option');option.value=year;option.textContent=year+'년';return option;}));
     function renderYear(){
       const year=select.value;
@@ -62,7 +62,7 @@
     const response=await fetch('facility-files.json',{cache:'no-store'});
     if(!response.ok)throw new Error('facility list unavailable');
     const files=await response.json();
-    const years=['2027','2026'];
+    const years=['2026','2027'];
     if(!years.length){list.innerHTML='<p class="photo-message">연도 폴더가 아직 없습니다. assets/facility/연도 폴더에 파일을 올려 주세요.</p>';return;}
     select.replaceChildren(...years.map(year=>{const option=document.createElement('option');option.value=year;option.textContent=year+'년';return option;}));
     function renderYear(){
